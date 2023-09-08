@@ -1,9 +1,10 @@
-const { createPaymentIntention } = require("../Services/wibondServices");
+const { getPlansProfile } = require("../Services/wibondServices");
 
-exports.createPaymentInt = async (req, res) => {
+exports.createPaymentInt = async (_, res) => {
     try {
-        const result = await createPaymentIntention(req);
+        const result = await getPlansProfile();
         const { status, data } = result;
+        console.log("result", result);
         res.status(status).json(data);
 
     } catch (error) {

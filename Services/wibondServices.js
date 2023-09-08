@@ -5,13 +5,43 @@ dotenv.config({ path: './config.env' });
 
 
 const getPlansProfile = async () => {
-    const response = await axios.get(`${process.env.BASE_URL_WIBOND}/payment-link/anonymous/plans-profile/tenant/${process.env.ID_TENANT}/wallet/${process.env.ID_WALLET}`,
-        {},
-        { headers: { 'Content-Type': 'application/json' } }
-    );
+    try {
+        const response = await axios.get(`${process.env.BASE_URL_WIBOND}/payment-link/anonymous/plans-profile/tenant/${process.env.ID_TENANT}/wallet/${process.env.ID_WALLET}`, { headers: { 'Authorization': process.env.SECRET_KEY } }
+        );
 
-    return response
+        return result = {
+            error: false,
+            data: response.data
+        }
+
+    } catch (e) {
+        console.error("Error:", e);
+
+        return {
+            error: true,
+            data: e
+        }
+    }
 }
+
+
+const obtainKeyValuePair = (arr) => {
+
+    let finalArr = []
+
+    arr.forEach(plan => {
+        finalArr.push({
+            id: plan.id,
+            code: plan.code
+        })
+    })
+
+    return finalArr
+}
+
+
+
+
 
 
 // const generateAccessToken = async () => {
