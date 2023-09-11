@@ -1,11 +1,10 @@
-const { getPlansProfile } = require("../Services/wibondServices");
+const { createLinkPaymentHandle } = require("../Services/wibondServices");
 
-exports.createPaymentInt = async (_, res) => {
+exports.createLinkPayment = async (req, res) => {
     try {
-        const result = await getPlansProfile();
-        const { status, data } = result;
+        const result = await createLinkPaymentHandle(req);
         console.log("result", result);
-        res.status(status).json(data);
+        res.status(200).json(result);
 
     } catch (error) {
         res.status(500).send('Internal error server');

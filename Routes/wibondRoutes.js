@@ -4,6 +4,5 @@ const wibondController = require("../Controllers/wibondController.js");
 const router = express.Router();
 
 router.route('/')
-    .get(wibondController.createPaymentInt)
-
+    .post(wibondController.createLinkPayment)
 module.exports = router;

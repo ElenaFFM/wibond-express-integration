@@ -3,13 +3,45 @@ const { default: axios } = require("axios");
 
 dotenv.config({ path: './config.env' });
 
-
 const getPlansProfile = async () => {
     try {
         const response = await axios.get(`${process.env.BASE_URL_WIBOND}/payment-link/anonymous/plans-profile/tenant/${process.env.ID_TENANT}/wallet/${process.env.ID_WALLET}`, { headers: { 'Authorization': process.env.SECRET_KEY } }
         );
 
-        return result = {
+        // console.log("response1", typeof response.data);
+        // console.log("response2", response.data);
+        // // console.log("response3", JSON.parse(response.data));
+        // console.log("response4", JSON.stringify(response.data));
+
+        return {
+            'error': false,
+            'data': response.data
+        }
+
+    } catch (e) {
+
+        console.error("Error:", e);
+
+        return {}
+    }
+}
+
+
+const createLinkPayment = async (amount, plans) => {
+    try {
+        const response = await axios.post(`${process.env.BASE_URL_WIBOND}/payment-link/anonymous/create-payment-link/tenant/${process.env.ID_TENANT}/wallet/${process.env.ID_WALLET}`,
+            {
+                "productName": "Producto de prueba",
+                "amount": amount,
+                "options": plans,
+                "urlSuccess": "https://www.google.com/?hl=es",
+                "urlNotification": "https://example.com.ar/wc-api/wibond_gateway",
+                "urlCheckout": "https://https://shapediver.com/"
+            },
+            { headers: { 'Authorization': process.env.SECRET_KEY } }
+        );
+
+        return {
             error: false,
             data: response.data
         }
@@ -40,7 +72,28 @@ const obtainKeyValuePair = (arr) => {
 }
 
 
+exports.createLinkPaymentHandle = async (req) => {
 
+    try {
+
+        const plans = await getPlansProfile();
+
+        console.log("PLAANS", typeof plans.data.plans, plans.data.plans);
+
+        if (!plans.error) {
+            const arrPlansIdCodes = obtainKeyValuePair(plans.plans);
+
+            const response = await createLinkPayment(req.amount, arrPlansIdCodes);
+
+            return response
+        }
+
+    } catch (e) {
+        console.log("-------------------");
+        console.log("Error crítico: " + e);
+    }
+
+}
 
 
 
