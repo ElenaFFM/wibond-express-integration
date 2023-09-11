@@ -8,21 +8,19 @@ const getPlansProfile = async () => {
         const response = await axios.get(`${process.env.BASE_URL_WIBOND}/payment-link/anonymous/plans-profile/tenant/${process.env.ID_TENANT}/wallet/${process.env.ID_WALLET}`, { headers: { 'Authorization': process.env.SECRET_KEY } }
         );
 
-        // console.log("response1", typeof response.data);
-        // console.log("response2", response.data);
-        // // console.log("response3", JSON.parse(response.data));
-        // console.log("response4", JSON.stringify(response.data));
-
         return {
-            'error': false,
-            'data': response.data
+            data: response.data,
+            error: false
         }
 
     } catch (e) {
 
         console.error("Error:", e);
 
-        return {}
+        return {
+            data: {},
+            error: true
+        }
     }
 }
 
@@ -78,12 +76,19 @@ exports.createLinkPaymentHandle = async (req) => {
 
         const plans = await getPlansProfile();
 
-        console.log("PLAANS", typeof plans.data.plans, plans.data.plans);
+        console.log("PLANS", plans);
 
         if (!plans.error) {
-            const arrPlansIdCodes = obtainKeyValuePair(plans.plans);
+
+            console.log("ACÁ ENTRA");
+
+            const arrPlansIdCodes = obtainKeyValuePair(plans.data.plans);
+
+            console.log("arrPlansIdCodes", typeof arrPlansIdCodes, arrPlansIdCodes);
 
             const response = await createLinkPayment(req.amount, arrPlansIdCodes);
+
+            console.log(response);
 
             return response
         }
