@@ -27,7 +27,8 @@ const getPlansProfile = async () => {
 
 const createLinkPayment = async (amount, plans) => {
     try {
-        const response = await axios.post(`${process.env.BASE_URL_WIBOND}/payment-link/anonymous/create-payment-link/tenant/${process.env.ID_TENANT}/wallet/${process.env.ID_WALLET}`,
+
+        const response = await axios.post(`${process.env.BASE_URL_WIBOND}/payment-link/anonymous/create-payment-link/${process.env.ID_TENANT}/wallet/${process.env.ID_WALLET}`,
             {
                 "productName": "Producto de prueba",
                 "amount": amount,
@@ -76,82 +77,26 @@ exports.createLinkPaymentHandle = async (req) => {
 
         const plans = await getPlansProfile();
 
-        console.log("PLANS", plans);
-
         if (!plans.error) {
-
-            console.log("ACÁ ENTRA");
 
             const arrPlansIdCodes = obtainKeyValuePair(plans.data.plans);
 
-            console.log("arrPlansIdCodes", typeof arrPlansIdCodes, arrPlansIdCodes);
+            const response = await createLinkPayment(req.body.amount, arrPlansIdCodes);
 
-            const response = await createLinkPayment(req.amount, arrPlansIdCodes);
+            return {
+                data: response.data,
+                status: 201
+            }
 
-            console.log(response);
-
-            return response
         }
 
     } catch (e) {
-        console.log("-------------------");
-        console.log("Error crítico: " + e);
+        console.log("Error: " + e);
+
+        return {
+            data: e,
+            status: 500
+        }
     }
 
 }
-
-
-
-// const generateAccessToken = async () => {
-//     const response = await axios.post(`${process.env.BASE_URL_WIBOND}/merchants/middleman/token`,
-//         {
-//             username: process.env.CLIENT_ID,
-//             password: process.env.CLIENT_SECRET,
-//         },
-//         { headers: { 'Content-Type': 'application/json' } });
-//     return response.data.accessToken;
-// };
-
-
-// exports.createPaymentIntention = async (req) => {
-
-//     // Crear orden de compra en la base de datos de la tienda. Esto viene desde el front (?.
-//     const mockOrder = {
-//         id: 123,
-//     };
-
-//     try {
-
-//         const accessToken = await generateAccessToken();
-
-//         const response = await axios.post(`${process.env.BASE_URL_WIBOND}/merchants/ecommerce/payment-intention`,
-//             {
-//                 productName: 'Producto botón de pago',
-//                 price: req.body.price,
-//                 quantity: 1,
-//                 storeId: process.env.STORE_ID,
-//                 currency: 'ARS',
-//                 externalIntentionId: mockOrder.id,
-//                 // expirationDate: "2023-12-27 18:50",
-//             },
-//             {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     Authorization: `Bearer ${accessToken}`,
-//                 },
-//             });
-
-//         return {
-//             status: 201,
-//             data: response.data
-//         }
-
-
-//     } catch (error) {
-
-//         return {
-//             status: 500,
-//             data: error
-//         }
-//     }
-// };
